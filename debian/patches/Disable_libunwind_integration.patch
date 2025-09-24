@@ -1,6 +1,6 @@
 Description: Disable libunwind integration
 Bug-Debian: https://bugs.debian.org/1093688
-Forwarded: no
+Forwarded: https://lists.libcamera.org/pipermail/libcamera-devel/2025-September/053264.html
 Author: Dylan Aïssi <daissi@debian.org>
 
 --- a/meson_options.txt
