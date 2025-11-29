@@ -39,6 +39,7 @@ Build-Depends-Indep: doxygen <!nodoc>,
                      libjs-sphinxdoc <!nodoc>,
                      libjs-underscore <!nodoc>,
                      python3-sphinx:native <!nodoc>,
+                     python3-sphinx-book-theme:native <!nodoc>,
                      python3-sphinxcontrib.doxylink:native <!nodoc>
 Standards-Version: 4.7.2
 Vcs-Browser: https://salsa.debian.org/multimedia-team/libcamera
