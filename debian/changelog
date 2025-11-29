@@ -1,3 +1,10 @@
+libcamera (0.6.0-1) UNRELEASED; urgency=medium
+
+  * New upstream version 0.6.0
+  * Remove Disable_libunwind_integration.patch, merged upstream.
+
+ -- Dylan Aïssi <daissi@debian.org>  Sat, 29 Nov 2025 15:06:30 +0100
+
 libcamera (0.5.2-3) unstable; urgency=medium
 
   * salsa-ci: enable cross-build job
