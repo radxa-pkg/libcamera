@@ -1,6 +1,7 @@
 libcamera (0.6.0-1) UNRELEASED; urgency=medium
 
   * New upstream version 0.6.0
+  * Bump SONAME to libcamera0.6
   * Remove Disable_libunwind_integration.patch, merged upstream.
   * Add python3-sphinx-book-theme in Build-Depends-Indep.
 
