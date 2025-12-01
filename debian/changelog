@@ -5,6 +5,7 @@ libcamera (0.6.0-1) UNRELEASED; urgency=medium
   * Remove Disable_libunwind_integration.patch, merged upstream.
   * Add python3-sphinx-book-theme in Build-Depends-Indep.
   * Adjust python module install path.
+  * salsa-ci: disable debrebuild and reprotest jobs.
 
  -- Dylan Aïssi <daissi@debian.org>  Sat, 29 Nov 2025 15:06:30 +0100
 
