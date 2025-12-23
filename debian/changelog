@@ -1,3 +1,9 @@
+libcamera (0.6.0-2) unstable; urgency=medium
+
+  * Upload to unstable.
+
+ -- Dylan Aïssi <daissi@debian.org>  Tue, 23 Dec 2025 11:28:25 +0100
+
 libcamera (0.6.0-1) experimental; urgency=medium
 
   * New upstream version 0.6.0
