@@ -1,3 +1,10 @@
+libcamera (0.6.0-3) UNRELEASED; urgency=medium
+
+  * Remove ppc64el-fix-ftbfs-gcc.patch, no longer required.
+    The build was successful on ppc64el via debusine without this patch.
+
+ -- Dylan Aïssi <daissi@debian.org>  Tue, 23 Dec 2025 11:42:46 +0100
+
 libcamera (0.6.0-2) unstable; urgency=medium
 
   * Upload to unstable.
