@@ -1,6 +1,7 @@
 libcamera (0.7.0-1) UNRELEASED; urgency=medium
 
   * New upstream version 0.7.0
+  * Bump SONAME to libcamera0.7
   * Remove ppc64el-fix-ftbfs-gcc.patch, no longer required.
     The build was successful on ppc64el via debusine without this patch.
 
