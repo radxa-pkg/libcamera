@@ -5,8 +5,6 @@ include:
 variables:
   SALSA_CI_DISABLE_BUILD_PACKAGE_ARM64: 0
   SALSA_CI_DISABLE_CROSSBUILD_ARM64: 0
-
-variables:
   SALSA_CI_DISABLE_DEBREBUILD: 1
   SALSA_CI_DISABLE_REPROTEST: 1
 # libcamera is known not to be reproducible, see:
