@@ -1,1 +1,2 @@
 skip_failing_tests.patch
+Fix_detection_tensorflow-lite.patch

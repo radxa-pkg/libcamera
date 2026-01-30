@@ -4,6 +4,7 @@ libcamera (0.7.0-1) UNRELEASED; urgency=medium
   * Bump SONAME to libcamera0.7
   * Add libtensorflow-lite-dev in Build-Depends for arm64 armhf,
     this is required to enable the Raspberry Pi Neural Network AWB algorithm.
+  * Add patch fixing detection of system tensorflow-lite.
   * Remove ppc64el-fix-ftbfs-gcc.patch, no longer required.
     The build was successful on ppc64el via debusine without this patch.
 
