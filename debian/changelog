@@ -1,5 +1,6 @@
-libcamera (0.7.0-1) UNRELEASED; urgency=medium
+libcamera (0.7.0-1) experimental; urgency=medium
 
+  [ Dylan Aïssi ]
   * New upstream version 0.7.0
   * Bump SONAME to libcamera0.7
   * Add libtensorflow-lite-dev in Build-Depends for arm64 armhf,
@@ -12,7 +13,10 @@ libcamera (0.7.0-1) UNRELEASED; urgency=medium
       - Priority: optional
   * Bump Standards-Version to 4.7.3
 
- -- Dylan Aïssi <daissi@debian.org>  Fri, 30 Jan 2026 22:58:17 +0100
+  [ David Heidelberg ]
+  * salsa-ci: fix ARM64 builds
+
+ -- Dylan Aïssi <daissi@debian.org>  Sat, 31 Jan 2026 09:56:44 +0100
 
 libcamera (0.6.0-2) unstable; urgency=medium
 
