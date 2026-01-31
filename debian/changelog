@@ -7,6 +7,9 @@ libcamera (0.7.0-1) UNRELEASED; urgency=medium
   * Add patch fixing detection of system tensorflow-lite.
   * Remove ppc64el-fix-ftbfs-gcc.patch, no longer required.
     The build was successful on ppc64el via debusine without this patch.
+  * Remove redundant:
+      - Rules-Requires-Root: no
+      - Priority: optional
 
  -- Dylan Aïssi <daissi@debian.org>  Fri, 30 Jan 2026 22:58:17 +0100
 
