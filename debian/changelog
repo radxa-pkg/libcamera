@@ -10,6 +10,7 @@ libcamera (0.7.0-1) UNRELEASED; urgency=medium
   * Remove redundant:
       - Rules-Requires-Root: no
       - Priority: optional
+  * Bump Standards-Version to 4.7.3
 
  -- Dylan Aïssi <daissi@debian.org>  Fri, 30 Jan 2026 22:58:17 +0100
 
