@@ -1,3 +1,10 @@
+libcamera (0.7.0-2) unstable; urgency=medium
+
+  * Upload to unstable.
+  * Update links in d/u/metadata
+
+ -- Dylan Aïssi <daissi@debian.org>  Mon, 16 Feb 2026 08:53:39 +0100
+
 libcamera (0.7.0-1) experimental; urgency=medium
 
   [ Dylan Aïssi ]
