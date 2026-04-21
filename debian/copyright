@@ -5,7 +5,7 @@ Source: https://libcamera.org/
 
 Files: *
 Copyright:
- 2018—2025 Libcamera contributors
+ 2018—2026 Libcamera contributors
  2019      Giulio Benetti
  2018—2019 Jacopo Mondi
  2018—2025 Kieran Bingham
@@ -18,19 +18,25 @@ Copyright:
 License: GPL-2+
 
 Files:
- */*/meson.build
+ LICENSES/CC0-1.0.txt
+ **/meson.build
+ meson_options.txt
+ .clang-tidy
+ .editorconfig
+ subprojects/*
 Copyright:
- 2018—2025 Libcamera contributors
+ 2018—2026 Libcamera contributors
 License: CC0-1.0
 
 Files:
+ LICENSES/LGPL-2.1-or-later.txt
  src/android/camera3_hal.cpp
  src/libcamera/*
  src/ipa/libipa/*
  src/apps/common/dng_writer.*
  include/libcamera/*
 Copyright:
- 2018—2025 Libcamera contributors
+ 2018—2026 Libcamera contributors
  2019      Giulio Benetti
  2018—2019 Jacopo Mondi
  2018—2019 Kieran Bingham
@@ -46,6 +52,18 @@ Copyright:
 License: LGPL-2.1+
 
 Files:
+ include/libcamera/base/meson.build
+ include/libcamera/internal/converter/meson.build
+ include/libcamera/internal/meson.build
+ include/libcamera/internal/software_isp/meson.build
+ include/libcamera/internal/tracepoints/meson.build
+ include/libcamera/ipa/meson.build
+ include/libcamera/meson.build
+Copyright:
+ 2018—2026 Libcamera contributors
+License: CC0-1.0
+
+Files:
  src/apps/qcam/assets/feathericons/*.svg
 Copyright:
  2019 Cole Bemis (and other Feather icons contributors)
@@ -53,6 +71,9 @@ License: Expat
 Comment: https://feathericons.com/
 
 Files:
+ LICENSES/BSD-3-Clause.txt
+ utils/codegen/ipc/generate.py
+ utils/codegen/ipc/parser.py
  utils/codegen/ipc/mojo/*
  utils/codegen/ipc/tools/*
 Copyright:
@@ -65,13 +86,56 @@ Copyright:
  2019—2021 Collabora Ltd.
 License: LGPL-2.1+
 
+Files: src/android/*
+       src/apps/common/image.*
+       src/apps/common/ppm_writer.*
+       src/apps/qcam/assets/shader/shaders.qrc
+       src/apps/qcam/viewfinder_gl.*
+       src/ipa/ipu3/algorithms/*
+       src/ipa/ipu3/ipa_context.*
+       src/ipa/ipu3/ipu3.cpp
+       src/ipa/ipu3/module.h
+       src/ipa/mali-c55/*
+       src/ipa/rkisp1/*
+       src/ipa/simple/*
+       src/ipa/vimc/*
+       src/libcamera/pipeline/rpi/*
+       src/libcamera/software_isp/TODO
+       src/py/libcamera/*
+       src/v4l2/*
+       test/serialization/generated_serializer/include/libcamera/ipa/test.mojom
+       utils/codegen/gen-header.sh
+       utils/gen-shader-headers.sh
+       utils/codegen/ipc/generators/libcamera_templates/*
+Copyright:
+ 2018—2026 Libcamera contributors
+License: LGPL-2.1
+
 Files:
+ LICENSES/Apache-2.0.txt
  include/android/hardware/*
  include/android/metadata/*
  include/android/system/*
  src/android/metadata/*
+ utils/semver
 Copyright: 2008—2018 The Android Open Source Project
 License: Apache-2.0
+
+Files:
+ src/android/data/nautilus/camera_hal.yaml
+ src/android/data/soraka/camera_hal.yaml
+ src/apps/cam/capture-script.yaml
+ src/ipa/*/data/*.yaml
+ src/libcamera/pipeline/virtual/data/virtual.yaml
+Copyright:
+ 2018—2026 Libcamera contributors
+License: CC0-1.0
+
+Files:
+ src/py/examples/simple-*.py
+Copyright:
+ 2018—2026 Libcamera contributors
+License: BSD-3-clause
 
 Files:
  include/linux/v4l2-common.h
@@ -95,15 +159,41 @@ Copyright: 2019—2025 Raspberry Pi Ltd
 License: GPL-2+ with Linux-syscall-note exception or BSD-3-Clause
 
 Files:
+ include/linux/dma-buf.h
+ include/linux/dma-heap.h
+ include/linux/dw100.h
+ include/linux/intel-ipu3.h
+ include/linux/mali-c55-config.h
+ include/linux/media.h
  include/linux/media-bus-format.h
+ include/linux/media/v4l2-isp.h
+ include/linux/stddef.h
+ include/linux/udmabuf.h
  include/linux/v4l2-mediabus.h
+ include/linux/v4l2-subdev.h
 Copyright: 2009, Guennadi Liakhovetski <g.liakhovetski@gmx.de>
 License: GPL-2
 
 Files:
+ LICENSES/BSD-2-Clause.txt
  src/ipa/rpi/*
- src/libcamera/pipeline/rpi/*
- utils/raspberrypi/ctt/*
+ src/ipa/libipa/colours.*
+ src/ipa/libipa/histogram.*
+ src/ipa/libipa/lux.*
+ src/ipa/libipa/pwl.*
+ src/libcamera/shaders/bayer_*
+ utils/raspberrypi/*
+ utils/tuning/libtuning/ctt_*.py
+ utils/tuning/libtuning/generators/raspberrypi_output.py
+ utils/tuning/libtuning/image.py
+ utils/tuning/libtuning/macbeth.py
+ utils/tuning/libtuning/macbeth_ref.pgm
+ utils/tuning/libtuning/modules/agc/agc.py
+ utils/tuning/libtuning/modules/agc/rkisp1.py
+ utils/tuning/libtuning/modules/lsc/lsc.py
+ utils/tuning/libtuning/modules/lsc/raspberrypi.py
+ utils/tuning/libtuning/modules/lsc/rkisp1.py
+ utils/tuning/libtuning/utils.py
 Copyright:
  2019—2025 Raspberry Pi Ltd
 License: BSD-2-Clause
@@ -113,25 +203,43 @@ Copyright: 2017, Rockchip Electronics Co., Ltd.
 License: GPL-2+
 
 Files: Documentation/*
-Copyright: 2020—2025 Libcamera contributors
+       src/ipa/ipu3/ipu3-ipa-design-guide.rst
+Copyright: 2020—2026 Libcamera contributors
 License: CC-BY-SA-4.0
 
-Files: Documentation/theme/static/search.png
-Copyright: 2022 Fonticons, Inc.
+Files: LICENSES/CC-BY-4.0.txt
+       Documentation/code-of-conduct.rst
+Copyright: 2020—2026 Libcamera contributors
 License: CC-BY-4.0
 
-Files: Documentation/theme/search.html
+Files:
+ .clang-format
+ Documentation/gen-doxyfile.py
+ Documentation/install-doxygen.sh
+ src/py/libcamera/gen-py-controls.py
+ src/py/libcamera/gen-py-formats.py
+ src/v4l2/libcamerify.in
 Copyright:
- 2007—2018 Sphinx team
-License: BSD-2-Clause
+ 2018—2026 Libcamera contributors
+License: GPL-2
+
+Files:
+ Documentation/doxygen-awesome-css/doxygen-awesome*.css
+Copyright:
+ 2018—2026 Libcamera contributors
+License: Expat
 
 Files: debian/*
 Copyright:
  2019 Emmanuel Arias <emmanuelarias30@gmail.com>
  2019—2022 Andrej Shadura <andrewsh@debian.org>
  2020 IOhannes m zmölnig <umlaeute@debian.org>
- 2022-2025 Collabora Ltd.
+ 2022-2026 Collabora Ltd.
 License: GPL-2+
+
+Files: debian/tests/gstreamer1.0-libcamera
+Copyright: 2025 Collabora Ltd.
+License: Expat
 
 License: GPL-2+
  This package is free software; you can redistribute it and/or
@@ -183,8 +291,8 @@ Comment:
 License: GPL-2
  This package is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public
- License as published by the Free Software Foundation; either
- version 2.0 of the License.
+ License as published by the Free Software Foundation;
+ version 2 of the License.
  .
  This package is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -202,6 +310,23 @@ License: LGPL-2.1+
  modify it under the terms of the GNU Lesser General Public
  License as published by the Free Software Foundation; either
  version 2.1 of the License, or (at your option) any later version.
+ .
+ This package is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ .
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, see https://www.gnu.org/licenses/
+Comment:
+ On Debian systems, the complete text of the GNU Lesser General Public
+ License, can be found in "/usr/share/common-licenses/LGPL-2.1".
+
+License: LGPL-2.1
+ This package is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation;
+ version 2.1 of the License.
  .
  This package is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
