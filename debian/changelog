@@ -1,11 +1,11 @@
-libcamera (0.7.1-1) UNRELEASED; urgency=medium
+libcamera (0.7.1-1) unstable; urgency=medium
 
   * New upstream version 0.7.1
   * Update debian/copyright
   * salsa-ci: enable licenserecon, drop reprotest and disable build_arm64
   * Bump Standards-Version to 4.7.4
 
- -- Dylan Aïssi <daissi@debian.org>  Wed, 29 Apr 2026 15:25:25 +0200
+ -- Dylan Aïssi <daissi@debian.org>  Wed, 29 Apr 2026 17:26:08 +0200
 
 libcamera (0.7.0-2) unstable; urgency=medium
 
