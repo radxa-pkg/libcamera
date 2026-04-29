@@ -22,6 +22,7 @@ Files:
  **/meson.build
  meson_options.txt
  .clang-tidy
+ .b4-config
  .editorconfig
  subprojects/*
 Copyright:
@@ -100,7 +101,6 @@ Files: src/android/*
        src/ipa/simple/*
        src/ipa/vimc/*
        src/libcamera/pipeline/rpi/*
-       src/libcamera/software_isp/TODO
        src/py/libcamera/*
        src/v4l2/*
        test/serialization/generated_serializer/include/libcamera/ipa/test.mojom
@@ -127,6 +127,10 @@ Files:
  src/apps/cam/capture-script.yaml
  src/ipa/*/data/*.yaml
  src/libcamera/pipeline/virtual/data/virtual.yaml
+ src/libcamera/pipeline/rpi/*/data/example.yaml
+ src/libcamera/software_isp/TODO.md
+ utils/tuning/config-example.yaml
+ utils/tuning/requirements.txt
 Copyright:
  2018—2026 Libcamera contributors
 License: CC0-1.0
