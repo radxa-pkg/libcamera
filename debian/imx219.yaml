@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: CC0-1.0
+%YAML 1.1
+---
+version: 1
+algorithms:
+  - BlackLevel:
+  - Awb:
+      # 手动引导白平衡（非常重要）
+      gains:
+        red: 1.8
+        green: 1.0
+        blue: 1.4
+  - Ccm:
+      ccms:
+        - ct: 6500
+          ccm: [
+            1.35, -0.25, -0.10,
+           -0.10,  0.80, -0.10,
+           -0.05, -0.30,  1.35
+          ]
+  - Agc:
+      # 防止自动曝光拉灰
+      target: 0.55
+      speed: 0.2
+...

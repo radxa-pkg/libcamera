@@ -16,10 +16,8 @@ Build-Depends: debhelper-compat (= 13),
                libgtest-dev <!nocheck>,
                libjpeg-dev <!pkg.libcamera.nosdl>,
                liblttng-ust-dev [!hurd-any !i386],
-               libpisp-dev [arm64 armel armhf],
                libpython3-dev <!pkg.libcamera.nopython>,
                libsdl2-dev <!pkg.libcamera.nosdl>,
-               libtensorflow-lite-dev [arm64 armhf],
                libtiff-dev,
                libudev-dev [linux-any],
                libyaml-dev,
@@ -111,6 +109,11 @@ Multi-Arch: foreign
 Section: video
 Depends: ${misc:Depends},
          ${shlibs:Depends},
+         libjpeg62-turbo | libjpeg62 | libjpeg8,
+         libqt6gui6 | libqt6gui6t64,
+         libqt6opengl6 | libqt6opengl6t64,
+         libqt6openglwidgets6 | libqt6openglwidgets6t64,
+         libqt6widgets6 | libqt6widgets6t64,
          libcamera-v4l2 (= ${binary:Version})
 Pre-Depends: ${misc:Pre-Depends}
 Description: complex camera support library (tools)
@@ -152,8 +155,8 @@ Package: python3-libcamera
 Architecture: linux-any
 Section: python
 Depends: ${misc:Depends},
-         ${python3:Depends},
-         ${shlibs:Depends}
+         ${shlibs:Depends},
+         python3
 Description: complex camera support library (Python bindings)
  libcamera is a complex camera support library which handles low-level
  control of the camera devices, providing a unified higher-level
