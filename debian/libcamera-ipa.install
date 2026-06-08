@@ -1,3 +1,4 @@
 usr/lib/*/libcamera/ipa
 usr/libexec/*/libcamera/*_ipa_proxy
 usr/share/libcamera
+debian/imx219.yaml usr/share/libcamera/ipa/simple/

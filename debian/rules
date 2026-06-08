@@ -25,8 +25,11 @@ override_dh_auto_configure:
 	dh_auto_configure -- \
                --libexecdir=libexec/${DEB_HOST_MULTIARCH} \
 		-Dgstreamer=enabled \
+		-Dpipelines=simple \
 		-Dlibunwind=disabled \
 		-Dpycamera=enabled \
+		-Drpi-awb-nn=disabled \
+		-Ddocumentation=disabled \
 		-Dqcam=$(QCAM) \
 		-Dtest=true \
 		$(CONFFLAGS) \
@@ -67,6 +70,16 @@ endif
 
 execute_after_dh_fixperms:
 	find debian/ -name 'v4l2-compat.so' -exec chmod -x '{}' \;
+
+# Qt6 GUI packages and libjpeg: names differ between distros.
+# Exclude from shlibs auto-detection and use manual alternatives
+# in debian/control instead:
+#   - Qt6 t64 (Ubuntu 24.04) vs non-t64 (26.04 + Debian 13)
+#   - libjpeg8 (Ubuntu 24.04) vs libjpeg62-turbo (Debian/Ubuntu 26.04)
+override_dh_shlibdeps:
+	dh_shlibdeps -- -xlibqt6gui6t64 -xlibqt6opengl6t64 \
+		-xlibqt6openglwidgets6t64 -xlibqt6widgets6t64 \
+		-xlibjpeg8
 
 .PHONY: licensecheck
 licensecheck:
