@@ -1,3 +1,19 @@
+libcamera (0.7.1-1-radxa-1) unstable; urgency=medium
+
+  * Remove libpisp-dev and libtensorflow-lite-dev from Build-Depends
+    (RPi-specific, unused on Qualcomm platforms)
+  * Add meson options: -Dpipelines=simple, -Drpi-awb-nn=disabled,
+    -Ddocumentation=disabled
+  * Add cross-distro Qt6 package alternatives (t64 vs non-t64) for
+    Ubuntu 24.04, 26.04 and Debian 13 compatibility
+  * Add libjpeg alternatives (libjpeg62-turbo|libjpeg62|libjpeg8)
+  * Replace ${python3:Depends} with python3:any for cross-distro
+    Python version compatibility
+  * Add IPA tuning file for Radxa 8M 219 camera (IMX219)
+  * Add GitHub Actions CI workflows
+
+ -- "Radxa Computer Co., Ltd" <dev@radxa.com>  Tue, 09 Jun 2026 18:49:21 +0800
+
 libcamera (0.7.1-1) unstable; urgency=medium
 
   * New upstream version 0.7.1
