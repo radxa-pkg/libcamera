@@ -12,7 +12,7 @@ jobs:
       image: ubuntu:noble
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Build
         run: |
           apt-get update
@@ -39,7 +39,7 @@ jobs:
     if: github.event_name != 'pull_request' && github.event_name != 'merge_group' && github.ref_name == 'resolute-updates'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - uses: actions/download-artifact@v5
         with:
           name: ${{ github.event.repository.name }}
