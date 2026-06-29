@@ -34,7 +34,7 @@ jobs:
   release:
     runs-on: ubuntu-24.04-arm
     needs: build
-    if: github.event_name != 'pull_request' && github.event_name != 'merge_group' && github.ref_name == 'resolute-updates'
+    if: github.event_name != 'pull_request' && github.event_name != 'merge_group' && github.ref_name == 'main'
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -65,7 +65,7 @@ jobs:
         with:
           tag_name: ${{ env.version }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          target_commitish: resolute-updates
+          target_commitish: main
           draft: false
           fail_on_unmatched_files: false
           files: |
