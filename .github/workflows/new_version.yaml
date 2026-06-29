@@ -1,23 +1,37 @@
 jobs:
-  build:
+  release:
+    permissions:
+      contents: "write"
     runs-on: ubuntu-24.04-arm
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7
+      - name: "Checkout"
+        uses: "actions/checkout@v7"
         with:
-          submodules: recursive
           fetch-depth: 0
-          token: ${{secrets.GIT_PUSH_TOKEN}}
-      - name: Create release commit
+          submodules: "recursive"
+          token: "${{secrets.CODE_WRITE_TOKEN}}"
+      - if: "github.event.inputs.update == 'true'"
+        name: "Update submodules"
         run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git submodule update --remote
+          if git diff --quiet; then
+              echo "Submodules are the latest. Nothing to update."
+              exit
+          fi
+          git add .
+          git commit -m "chore: update submodules"
+      - name: Test
+        run: |
+          set -euo pipefail
           sudo apt-get update
           sudo apt-get install --no-install-recommends -y git-buildpackage
           export DEBEMAIL="dev@radxa.com"
           export DEBFULLNAME='"Radxa Computer Co., Ltd"'
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-      - name: Test
-        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
           sudo apt-get install --no-install-recommends -y devscripts
           sudo apt-get build-dep -y .
           gbp dch --ignore-branch --multimaint-merge --release --spawn-editor=never \
