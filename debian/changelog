@@ -1,3 +1,24 @@
+libcamera (0.7.1-1-radxa-2) noble; urgency=medium
+
+  [ Chongbiao Chen ]
+  * chore: tune IMX219 image parameters
+  * feat: add pkg.conf
+  * ci: bump actions to latest versions
+  * ci: drop explicit ubuntu:noble container
+  * ci: add sudo to apt-get commands for non-container runs
+  * ci: add Create release commit to new_version workflow
+  * ci: change release target branch from resolute-updates to main
+  * ci: remove redundant top-level workflow definitions from new_version
+
+  [ dependabot[bot] ]
+  * Bump actions/upload-artifact from 4 to 7
+
+  [ ZHANG Yuntian ]
+  * Update release.yaml
+  * Update new_version.yaml
+
+ -- "Radxa Computer Co., Ltd" <dev@radxa.com>  Mon, 29 Jun 2026 12:01:25 +0000
+
 libcamera (0.7.1-1-radxa-1) unstable; urgency=medium
 
   * Remove libpisp-dev and libtensorflow-lite-dev from Build-Depends
