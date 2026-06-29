@@ -12,7 +12,7 @@ jobs:
       image: ubuntu:noble
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Build
         run: |
           apt-get update
@@ -39,8 +39,8 @@ jobs:
     if: github.event_name != 'pull_request' && github.event_name != 'merge_group' && github.ref_name == 'resolute-updates'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-      - uses: actions/download-artifact@v5
+        uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           name: ${{ github.event.repository.name }}
       - name: Check if the latest version is releasable
@@ -63,7 +63,7 @@ jobs:
           echo "$version" > VERSION
       - name: Release
         if: env.distro != 'UNRELEASED'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ env.version }}
           body_path: README.md
@@ -77,7 +77,7 @@ jobs:
             VERSION
       - name: Append changelog
         if: env.distro != 'UNRELEASED'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ env.version }}
           body: |
