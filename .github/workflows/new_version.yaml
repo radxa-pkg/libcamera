@@ -27,8 +27,29 @@ jobs:
         run: |
           sudo apt-get install --no-install-recommends -y devscripts
           sudo apt-get build-dep -y .
+          gbp dch --ignore-branch --multimaint-merge --release --spawn-editor=never \
+            --git-log='--no-merges --perl-regexp --invert-grep --grep=^(chore:\stemplates\sgenerated)' \
+            --dch-opt=--upstream --commit --commit-msg="feat: release %(version)s"
           export DEB_BUILD_OPTIONS=nocheck
           debuild -us -uc -b -Pnodoc
-      - name: Push
+      - if: "github.event.inputs.release == 'true'"
+        name: "Push"
         run: |
           git push
+        shell: "bash"
+name: "Create release"
+"on":
+  workflow_dispatch:
+    inputs:
+      release:
+        default: true
+        description: "Release new version"
+        required: true
+        type: "boolean"
+      update:
+        default: false
+        description: "Update submodule"
+        required: true
+        type: "boolean"
+permissions: {}
+run-name: "${{ inputs.update && 'Update submodule' || '' }}${{ inputs.update && inputs.release && ' & ' || '' }}${{ inputs.release && 'Release new version' }}${{ !inputs.update && !inputs.release && 'Test for new release' || '' }}"
