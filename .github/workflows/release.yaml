@@ -13,13 +13,13 @@ jobs:
         uses: actions/checkout@v7
       - name: Build
         run: |
-          apt-get update
-          apt-get install --no-install-recommends -y git-buildpackage devscripts
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y git-buildpackage devscripts
           export DEBEMAIL="dev@radxa.com"
           export DEBFULLNAME='"Radxa Computer Co., Ltd"'
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          apt-get build-dep -y .
+          sudo apt-get build-dep -y .
           export DEB_BUILD_OPTIONS=nocheck
           debuild -us -uc -b -Pnodoc
       - name: Workaround actions/upload-artifact#176

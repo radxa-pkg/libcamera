@@ -17,16 +17,16 @@ jobs:
           token: ${{secrets.GIT_PUSH_TOKEN}}
       - name: Create release commit
         run: |
-          apt-get update
-          apt-get install --no-install-recommends -y git-buildpackage
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y git-buildpackage
           export DEBEMAIL="dev@radxa.com"
           export DEBFULLNAME='"Radxa Computer Co., Ltd"'
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - name: Test
         run: |
-          apt-get install --no-install-recommends -y devscripts
-          apt-get build-dep -y .
+          sudo apt-get install --no-install-recommends -y devscripts
+          sudo apt-get build-dep -y .
           export DEB_BUILD_OPTIONS=nocheck
           debuild -us -uc -b -Pnodoc
       - name: Push
