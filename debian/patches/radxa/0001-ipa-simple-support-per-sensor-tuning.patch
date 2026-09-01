@@ -1,0 +1,373 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Peng Liu <liupeng@radxa.com>
+Date: Tue, 1 Sep 2026 10:28:17 +0800
+Subject: [PATCH] ipa: simple: support per-sensor tuning
+
+---
+ src/ipa/libipa/camera_sensor_helper.cpp | 11 +++++
+ src/ipa/simple/algorithms/adjust.cpp    | 35 ++++++++++----
+ src/ipa/simple/algorithms/adjust.h      |  4 ++
+ src/ipa/simple/algorithms/agc.cpp       | 44 ++++++++++++++++-
+ src/ipa/simple/algorithms/agc.h         |  5 ++
+ src/ipa/simple/algorithms/awb.cpp       | 64 +++++++++++++++++++++++--
+ src/ipa/simple/algorithms/awb.h         | 10 ++++
+ 7 files changed, 157 insertions(+), 16 deletions(-)
+
+diff --git a/src/ipa/libipa/camera_sensor_helper.cpp b/src/ipa/libipa/camera_sensor_helper.cpp
+index e3e3e53..b8e35e0 100644
+--- a/src/ipa/libipa/camera_sensor_helper.cpp
++++ b/src/ipa/libipa/camera_sensor_helper.cpp
+@@ -642,6 +642,17 @@ public:
+ };
+ REGISTER_CAMERA_SENSOR_HELPER("imx477", CameraSensorHelperImx477)
+ 
++class CameraSensorHelperImx577 : public CameraSensorHelper
++{
++public:
++	CameraSensorHelperImx577()
++	{
++		blackLevel_ = 4096;
++		gain_ = AnalogueGainLinear{ 0, 1024, -1, 1024 };
++	}
++};
++REGISTER_CAMERA_SENSOR_HELPER("imx577", CameraSensorHelperImx577)
++
+ class CameraSensorHelperImx708 : public CameraSensorHelper
+ {
+ public:
+diff --git a/src/ipa/simple/algorithms/adjust.cpp b/src/ipa/simple/algorithms/adjust.cpp
+index 8bf39c4..70ccb35 100644
+--- a/src/ipa/simple/algorithms/adjust.cpp
++++ b/src/ipa/simple/algorithms/adjust.cpp
+@@ -8,6 +8,8 @@
+ 
+ #include "adjust.h"
+ 
++#include <errno.h>
++
+ #include <libcamera/base/log.h>
+ #include <libcamera/base/utils.h>
+ 
+@@ -24,24 +26,39 @@ constexpr float kDefaultSaturation = 1.0f;
+ 
+ LOG_DEFINE_CATEGORY(IPASoftAdjust)
+ 
+-int Adjust::init(IPAContext &context, [[maybe_unused]] const ValueNode &tuningData)
++int Adjust::init(IPAContext &context, const ValueNode &tuningData)
+ {
++	defaultGamma_ = tuningData["gamma"].get<double>().value_or(kDefaultGamma);
++	defaultContrast_ =
++		tuningData["contrast"].get<double>().value_or(kDefaultContrast);
++	defaultSaturation_ =
++		tuningData["saturation"].get<double>().value_or(kDefaultSaturation);
++
++	if (defaultGamma_ < 0.1f || defaultGamma_ > 10.0f ||
++	    defaultContrast_ < 0.0f || defaultContrast_ > 2.0f ||
++	    defaultSaturation_ < 0.0f || defaultSaturation_ > 2.0f) {
++		LOG(IPASoftAdjust, Error) << "Invalid default image adjustment";
++		return -EINVAL;
++	}
++
+ 	context.ctrlMap[&controls::Gamma] =
+-		ControlInfo(0.1f, 10.0f, kDefaultGamma);
++		ControlInfo(0.1f, 10.0f, defaultGamma_);
+ 	context.ctrlMap[&controls::Contrast] =
+-		ControlInfo(0.0f, 2.0f, kDefaultContrast);
++		ControlInfo(0.0f, 2.0f, defaultContrast_);
+ 	if (context.ccmEnabled)
+ 		context.ctrlMap[&controls::Saturation] =
+-			ControlInfo(0.0f, 2.0f, kDefaultSaturation);
++			ControlInfo(0.0f, 2.0f, defaultSaturation_);
+ 	return 0;
+ }
+ 
+ int Adjust::configure(IPAContext &context,
+ 		      [[maybe_unused]] const IPAConfigInfo &configInfo)
+ {
+-	context.activeState.knobs.gamma = kDefaultGamma;
+-	context.activeState.knobs.contrast = std::optional<float>();
+-	context.activeState.knobs.saturation = std::optional<float>();
++	context.activeState.knobs.gamma = defaultGamma_;
++	context.activeState.knobs.contrast = defaultContrast_;
++	context.activeState.knobs.saturation =
++		context.ccmEnabled ? std::optional<float>(defaultSaturation_)
++				   : std::optional<float>();
+ 
+ 	return 0;
+ }
+@@ -121,10 +138,10 @@ void Adjust::process([[maybe_unused]] IPAContext &context,
+ 	metadata.set(controls::Gamma, gamma);
+ 
+ 	const auto &contrast = frameContext.contrast;
+-	metadata.set(controls::Contrast, contrast.value_or(kDefaultContrast));
++	metadata.set(controls::Contrast, contrast.value_or(defaultContrast_));
+ 
+ 	const auto &saturation = frameContext.saturation;
+-	metadata.set(controls::Saturation, saturation.value_or(kDefaultSaturation));
++	metadata.set(controls::Saturation, saturation.value_or(defaultSaturation_));
+ }
+ 
+ REGISTER_IPA_ALGORITHM(Adjust, "Adjust")
+diff --git a/src/ipa/simple/algorithms/adjust.h b/src/ipa/simple/algorithms/adjust.h
+index 49c1f26..6aad17c 100644
+--- a/src/ipa/simple/algorithms/adjust.h
++++ b/src/ipa/simple/algorithms/adjust.h
+@@ -43,6 +43,10 @@ public:
+ 
+ private:
+ 	void applySaturation(Matrix<float, 3, 3> &ccm, float saturation);
++
++	float defaultGamma_ = kDefaultGamma;
++	float defaultContrast_ = 1.0f;
++	float defaultSaturation_ = 1.0f;
+ };
+ 
+ } /* namespace ipa::soft::algorithms */
+diff --git a/src/ipa/simple/algorithms/agc.cpp b/src/ipa/simple/algorithms/agc.cpp
+index 2f7e040..9224900 100644
+--- a/src/ipa/simple/algorithms/agc.cpp
++++ b/src/ipa/simple/algorithms/agc.cpp
+@@ -7,6 +7,8 @@
+ 
+ #include "agc.h"
+ 
++#include <errno.h>
++#include <numeric>
+ #include <stdint.h>
+ 
+ #include <libcamera/base/log.h>
+@@ -36,11 +38,37 @@ static constexpr float kExposureOptimal = kExposureBinsCount / 2.0;
+  * enough to prevent the exposure from wobbling around the optimal value.
+  */
+ static constexpr float kExposureSatisfactory = 0.2;
++static constexpr unsigned int kSaturatedBins = 8;
+ 
+ Agc::Agc()
++	: exposureOptimal_(kExposureOptimal),
++	  exposureSatisfactory_(kExposureSatisfactory)
+ {
+ }
+ 
++int Agc::init([[maybe_unused]] IPAContext &context, const ValueNode &tuningData)
++{
++	exposureOptimal_ =
++		tuningData["targetMsv"].get<double>().value_or(kExposureOptimal);
++	exposureSatisfactory_ =
++		tuningData["tolerance"].get<double>().value_or(kExposureSatisfactory);
++	maxSaturatedPercentage_ =
++		tuningData["maxSaturatedPercentage"].get<double>().value_or(100.0);
++
++	if (exposureSatisfactory_ < 0.0f ||
++	    exposureOptimal_ - exposureSatisfactory_ < 1.0f ||
++	    exposureOptimal_ + exposureSatisfactory_ > kExposureBinsCount ||
++	    maxSaturatedPercentage_ < 0.0f ||
++	    maxSaturatedPercentage_ > 100.0f) {
++		LOG(IPASoftExposure, Error)
++			<< "Invalid exposure target " << exposureOptimal_
++			<< " and tolerance " << exposureSatisfactory_;
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
+ void Agc::updateExposure(IPAContext &context, IPAFrameContext &frameContext, double exposureMSV)
+ {
+ 	/*
+@@ -54,7 +82,7 @@ void Agc::updateExposure(IPAContext &context, IPAFrameContext &frameContext, dou
+ 	int32_t &exposure = frameContext.sensor.exposure;
+ 	double &again = frameContext.sensor.gain;
+ 
+-	if (exposureMSV < kExposureOptimal - kExposureSatisfactory) {
++	if (exposureMSV < exposureOptimal_ - exposureSatisfactory_) {
+ 		if (exposure < context.configuration.agc.exposureMax) {
+ 			int32_t next = exposure * kExpNumeratorUp / kExpDenominator;
+ 			if (next - exposure < 1)
+@@ -70,7 +98,7 @@ void Agc::updateExposure(IPAContext &context, IPAFrameContext &frameContext, dou
+ 		}
+ 	}
+ 
+-	if (exposureMSV > kExposureOptimal + kExposureSatisfactory) {
++	if (exposureMSV > exposureOptimal_ + exposureSatisfactory_) {
+ 		if (again > context.configuration.agc.again10) {
+ 			double next = again * kExpNumeratorDown / kExpDenominator;
+ 			if (again - next < context.configuration.agc.againMinStep)
+@@ -164,6 +192,18 @@ void Agc::process(IPAContext &context,
+ 	}
+ 
+ 	float exposureMSV = (denom == 0 ? 0 : static_cast<float>(num) / denom);
++	const uint64_t saturatedPixels = std::accumulate(
++		histogram.end() - kSaturatedBins, histogram.end(), uint64_t(0));
++	const float saturatedPercentage =
++		denom ? 100.0f * saturatedPixels / denom : 0.0f;
++
++	if (saturatedPercentage > maxSaturatedPercentage_) {
++		LOG(IPASoftExposure, Debug)
++			<< "Reducing exposure: " << saturatedPercentage
++			<< "% saturated pixels";
++		exposureMSV = exposureOptimal_ + exposureSatisfactory_ + 1.0f;
++	}
++
+ 	updateExposure(context, frameContext, exposureMSV);
+ }
+ 
+diff --git a/src/ipa/simple/algorithms/agc.h b/src/ipa/simple/algorithms/agc.h
+index 112d9f5..60154df 100644
+--- a/src/ipa/simple/algorithms/agc.h
++++ b/src/ipa/simple/algorithms/agc.h
+@@ -19,6 +19,7 @@ public:
+ 	Agc();
+ 	~Agc() = default;
+ 
++	int init(IPAContext &context, const ValueNode &tuningData) override;
+ 	void process(IPAContext &context, const uint32_t frame,
+ 		     IPAFrameContext &frameContext,
+ 		     const SwIspStats *stats,
+@@ -26,6 +27,10 @@ public:
+ 
+ private:
+ 	void updateExposure(IPAContext &context, IPAFrameContext &frameContext, double exposureMSV);
++
++	float exposureOptimal_;
++	float exposureSatisfactory_;
++	float maxSaturatedPercentage_ = 100.0f;
+ };
+ 
+ } /* namespace ipa::soft::algorithms */
+diff --git a/src/ipa/simple/algorithms/awb.cpp b/src/ipa/simple/algorithms/awb.cpp
+index f5c88ea..793895b 100644
+--- a/src/ipa/simple/algorithms/awb.cpp
++++ b/src/ipa/simple/algorithms/awb.cpp
+@@ -7,6 +7,8 @@
+ 
+ #include "awb.h"
+ 
++#include <algorithm>
++#include <errno.h>
+ #include <numeric>
+ #include <stdint.h>
+ 
+@@ -23,11 +25,42 @@ LOG_DEFINE_CATEGORY(IPASoftAwb)
+ 
+ namespace ipa::soft::algorithms {
+ 
++constexpr unsigned int kSaturatedBins = 8;
++
++int Awb::init([[maybe_unused]] IPAContext &context, const ValueNode &tuningData)
++{
++	redGainScale_ =
++		tuningData["redGainScale"].get<double>().value_or(1.0);
++	blueGainScale_ =
++		tuningData["blueGainScale"].get<double>().value_or(1.0);
++	initialRedGain_ =
++		tuningData["initialRedGain"].get<double>().value_or(redGainScale_);
++	initialBlueGain_ =
++		tuningData["initialBlueGain"].get<double>().value_or(blueGainScale_);
++	speed_ = tuningData["speed"].get<double>().value_or(1.0);
++	maxSaturatedPercentage_ =
++		tuningData["maxSaturatedPercentage"].get<double>().value_or(100.0);
++
++	if (redGainScale_ < 0.5f || redGainScale_ > 2.0f ||
++	    blueGainScale_ < 0.5f || blueGainScale_ > 2.0f ||
++	    initialRedGain_ < 0.1f || initialRedGain_ > 4.0f ||
++	    initialBlueGain_ < 0.1f || initialBlueGain_ > 4.0f ||
++	    speed_ <= 0.0f || speed_ > 1.0f ||
++	    maxSaturatedPercentage_ < 0.0f ||
++	    maxSaturatedPercentage_ > 100.0f) {
++		LOG(IPASoftAwb, Error) << "Invalid AWB tuning parameters";
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
+ int Awb::configure(IPAContext &context,
+ 		   [[maybe_unused]] const IPAConfigInfo &configInfo)
+ {
+ 	auto &gains = context.activeState.awb.gains;
+-	gains = { { 1.0, 1.0, 1.0 } };
++	gains = { { initialRedGain_, 1.0, initialBlueGain_ } };
++	gainsInitialized_ = false;
+ 
+ 	return 0;
+ }
+@@ -75,6 +108,17 @@ void Awb::process(IPAContext &context,
+ 	 */
+ 	const uint64_t nPixels = std::accumulate(
+ 		histogram.begin(), histogram.end(), uint64_t(0));
++	const uint64_t saturatedPixels = std::accumulate(
++		histogram.end() - kSaturatedBins, histogram.end(), uint64_t(0));
++
++	if (nPixels &&
++	    100.0 * saturatedPixels / nPixels > maxSaturatedPercentage_) {
++		LOG(IPASoftAwb, Debug)
++			<< "Keeping AWB gains: " << 100.0 * saturatedPixels / nPixels
++			<< "% saturated pixels";
++		return;
++	}
++
+ 	const uint64_t offset = blackLevel * nPixels;
+ 	const uint64_t minValid = 1;
+ 	/*
+@@ -88,11 +132,20 @@ void Awb::process(IPAContext &context,
+ 	 * Clamp max gain at 4.0, this also avoids 0 division.
+ 	 */
+ 	auto &gains = context.activeState.awb.gains;
+-	gains = { {
+-		sum.r() <= sum.g() / 4 ? 4.0f : static_cast<float>(sum.g()) / sum.r(),
++	RGB<float> gainsUpdate = { {
++		sum.r() <= sum.g() / 4
++			? 4.0f
++			: std::min(4.0f, redGainScale_ * static_cast<float>(sum.g()) / sum.r()),
+ 		1.0,
+-		sum.b() <= sum.g() / 4 ? 4.0f : static_cast<float>(sum.g()) / sum.b(),
++		sum.b() <= sum.g() / 4
++			? 4.0f
++			: std::min(4.0f, blueGainScale_ * static_cast<float>(sum.g()) / sum.b()),
+ 	} };
++	if (gainsInitialized_)
++		gains = gainsUpdate * speed_ + gains * (1.0f - speed_);
++	else
++		gains = gainsUpdate;
++	gainsInitialized_ = true;
+ 
+ 	RGB<double> rgbGains{ { 1 / gains.r(), 1 / gains.g(), 1 / gains.b() } };
+ 	context.activeState.awb.temperatureK = estimateCCT(rgbGains);
+@@ -100,7 +153,8 @@ void Awb::process(IPAContext &context,
+ 
+ 	LOG(IPASoftAwb, Debug)
+ 		<< "gain R/B: " << gains << "; temperature: "
+-		<< context.activeState.awb.temperatureK;
++		<< context.activeState.awb.temperatureK << "; saturated: "
++		<< (nPixels ? 100.0 * saturatedPixels / nPixels : 0.0) << "%";
+ }
+ 
+ REGISTER_IPA_ALGORITHM(Awb, "Awb")
+diff --git a/src/ipa/simple/algorithms/awb.h b/src/ipa/simple/algorithms/awb.h
+index ad993f3..80b7f4d 100644
+--- a/src/ipa/simple/algorithms/awb.h
++++ b/src/ipa/simple/algorithms/awb.h
+@@ -19,6 +19,7 @@ public:
+ 	Awb() = default;
+ 	~Awb() = default;
+ 
++	int init(IPAContext &context, const ValueNode &tuningData) override;
+ 	int configure(IPAContext &context, const IPAConfigInfo &configInfo) override;
+ 	void prepare(IPAContext &context,
+ 		     const uint32_t frame,
+@@ -29,6 +30,15 @@ public:
+ 		     IPAFrameContext &frameContext,
+ 		     const SwIspStats *stats,
+ 		     ControlList &metadata) override;
++
++private:
++	float redGainScale_ = 1.0f;
++	float blueGainScale_ = 1.0f;
++	float initialRedGain_ = 1.0f;
++	float initialBlueGain_ = 1.0f;
++	float speed_ = 1.0f;
++	float maxSaturatedPercentage_ = 100.0f;
++	bool gainsInitialized_ = false;
+ };
+ 
+ } /* namespace ipa::soft::algorithms */
