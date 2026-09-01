@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: CC0-1.0
+%YAML 1.1
+---
+version: 1
+algorithms:
+  - BlackLevel:
+  - Awb:
+      redGainScale: 0.95
+      blueGainScale: 1.00
+  - Adjust:
+      gamma: 2.2
+      contrast: 1.04
+  - Agc:
+      targetMsv: 1.5
+      tolerance: 0.2
+...

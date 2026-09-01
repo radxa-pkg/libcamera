@@ -1,6 +1,11 @@
 # SPDX-License-Identifier: CC0-1.0
 
 conf_files = files([
+    'imx214.yaml',
+    'imx219.yaml',
+    'imx415.yaml',
+    'imx577.yaml',
+    'imx708.yaml',
     'uncalibrated.yaml',
 ])
 
