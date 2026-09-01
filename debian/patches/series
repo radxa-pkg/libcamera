@@ -1,2 +1,3 @@
 skip_failing_tests.patch
 Fix_detection_tensorflow-lite.patch
+radxa/0001-ipa-simple-support-per-sensor-tuning.patch
