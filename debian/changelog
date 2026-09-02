@@ -1,3 +1,11 @@
+libcamera (0.7.1-1-radxa-3) noble; urgency=medium
+
+  [ Peng Liu ]
+  * feat: add simple IPA tuning data for Sony sensors
+  * debian: add Radxa simple IPA tuning patch
+
+ -- "Radxa Computer Co., Ltd" <dev@radxa.com>  Wed, 02 Sep 2026 10:49:42 +0000
+
 libcamera (0.7.1-1-radxa-2) noble; urgency=medium
 
   [ Chongbiao Chen ]
